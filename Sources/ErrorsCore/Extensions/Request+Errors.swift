@@ -9,27 +9,46 @@ import Foundation
 import Vapor
 
 
+/// Error response object
 public struct ErrorResponse: Content {
+    
+    /// Error
     public let error: String
+    
+    /// Description
     public let description: String
+    
 }
 
+/// Success response object
 public struct SuccessResponse: Content {
+    
+    /// Code
     public let code: String
+    
+    /// Description
     public let description: String?
+    
 }
 
 
+/// RequestResponse object
 public struct RequestResponse {
     
+    /// Request reference
     let request: Request
     
+    /// Initializer
     public init(req: Request) {
         self.request = req
     }
     
     // MARK: Generators
     
+    /// Basic response
+    ///
+    /// - parameters:
+    ///     - status: HTTPStatus, default .ok (200)
     public func basic(status: HTTPStatus = .ok) throws -> Response {
         let response = Response(using: request)
         response.http.status = status
@@ -40,6 +59,12 @@ public struct RequestResponse {
         return response
     }
     
+    /// Basic error response
+    ///
+    /// - parameters:
+    ///     - status: HTTPStatus
+    ///     - error: String, error
+    ///     - description: String, description
     public func error(status: HTTPStatus, error: String, description: String) throws -> Response {
         let response = try basic(status: status)
         
@@ -50,6 +75,12 @@ public struct RequestResponse {
         return response
     }
     
+    /// Basic success response
+    ///
+    /// - parameters:
+    ///     - status: HTTPStatus, default .ok (200)
+    ///     - error: String, error
+    ///     - description: String, description
     public func success(status: HTTPStatus = .ok, code: String, description: String? = nil) throws -> Response {
         let response = try basic(status: status)
         
@@ -60,47 +91,56 @@ public struct RequestResponse {
         return response
     }
     
+    /// Not found response (404)
     public func notFound() throws -> Response {
         // TODO: make "not_found" come from HTTPStatus
         let response = try error(status: .notFound, error: "not_found", description: "Not found")
         return response
     }
     
+    /// Not authorized (401)
     public func notAuthorized() throws -> Response {
         let response = try error(status: .unauthorized, error: "not_authorized", description: "Not authorized")
         return response
     }
     
+    /// Authentication has expired (401)
     public func authExpired() throws -> Response {
         let response = try error(status: .unauthorized, error: "not_authorized", description: "Authorization expired")
         return response
     }
     
+    /// Bad URL (404)
     public func badUrl() throws -> Response {
         let response = try error(status: .notFound, error: "not_found", description: "Endpoint doesn't exist; See http://boost.docs.apiary.io for API documentation")
         return response
     }
     
+    /// No content (204)
     public func noContent() throws -> Response {
         let response = try basic(status: .noContent)
         return response
     }
     
+    /// Object deleted (204)
     public func deleted() throws -> Response {
         let res = try noContent()
         return res
     }
     
+    /// Functionality obly available in debug mode response
     public func onlyInDebug() throws -> Response {
         let response = try error(status: .preconditionFailed, error: "not_available", description: "Endpoint is not available in production mode")
         return response
     }
     
+    /// Maintenance has finished standard response (200)
     public func maintenanceFinished(message: String) throws -> Response {
         let response = try success(code: "maintenance_ok", description: message)
         return response
     }
     
+    /// I am a teapot (418, and why not?!)
     public func teapot() throws -> Response {
         let response = try success(status: .custom(code: 418, reasonPhrase: "I am teapot"), code: "teapot", description: """
             I'm a little teapot
@@ -115,33 +155,23 @@ public struct RequestResponse {
         return response
     }
     
+    /// Ping
     public func ping() throws -> Response {
         let response = try success(code: "pong")
         return response
     }
     
+    /// Internal server error (500)
     public func internalServerError(message: String) throws -> Response {
         let response = try error(status: .internalServerError, error: "server_err", description: message)
         return response
     }
     
+    /// Full allow CORS response
     public func cors() throws -> Response {
         let response = try noContent()
-//        response.http.headers.replaceOrAdd(name: HTTPHeaderName.contentType, value: "application/json")
-//        response.http.headers.replaceOrAdd(name: HTTPHeaderName.accessControlAllowMethods, value: "GET,POST,PUT,PATCH,DELETE")
-//        let origin = request.http.headers["Origin"].first ?? "*"
         let origin = "http://www.boost-react.com"
         response.http.headers.replaceOrAdd(name: "Access-Control-Allow-Origin", value: origin)
-//        response.http.headers.replaceOrAdd(name: HTTPHeaderName.accessControlExpose, value: [
-//            HTTPHeaderName.authorization.description,
-//            HTTPHeaderName.contentType.description,
-//            HTTPHeaderName.cacheControl.description,
-//            HTTPHeaderName.contentDisposition.description,
-//            HTTPHeaderName.contentLength.description,
-//            HTTPHeaderName.userAgent.description,
-//            HTTPHeaderName.expires.description
-//            ].joined(separator: ", ")
-//        ) // Headers to be exposed to the client
         var headers: [String] = []
         var isContentType: Bool = false
         for header in request.http.headers {
@@ -153,7 +183,6 @@ public struct RequestResponse {
         if !isContentType {
             headers.append("Content-Type")
         }
-        //headers.append("*")
         if !headers.contains("Authorization") {
             headers.append("Authorization")
         }
@@ -168,6 +197,7 @@ public struct RequestResponse {
 
 public extension Request {
     
+    /// Quick access to preset responses (wooohoooo!)
     public var response: RequestResponse {
         return RequestResponse(req: self)
     }

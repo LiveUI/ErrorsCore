@@ -12,16 +12,20 @@ import Vapor
 // TODO: Change to frontend errors!
 public enum GenericError: FrontendError {
     
+    /// Impossible situation
     case impossibleSituation
     
-    public var code: String {
+    /// Error code
+    public var identifier: String {
         return "generic"
     }
     
-    public var description: String {
+    /// Error reason
+    public var reason: String {
         return "This should never, ever happen!"
     }
     
+    /// Error http status code
     public var status: HTTPStatus {
         return .internalServerError
     }
@@ -29,18 +33,45 @@ public enum GenericError: FrontendError {
 }
 
 public enum HTTPError: FrontendError {
+    
+    /// Not found
     case notFound
+    
+    /// Not authorized
     case notAuthorized
+    
+    /// Not authorized as Admin
     case notAuthorizedAsAdmin
+    
+    /// Missing request data
     case missingRequestData
+    
+    /// Missing authorization data
     case missingAuthorizationData
+    
+    /// Missing available
     case missingAvailable
     
-    public var code: String {
-        return "http_error"
+    /// Error code
+    public var identifier: String {
+        switch self {
+        case .notFound:
+            return "httperror.not_found"
+        case .notAuthorized:
+            return "httperror.not_authorized"
+        case .notAuthorizedAsAdmin:
+            return "httperror.not_authorized_as_admin"
+        case .missingRequestData:
+            return "httperror.missing_request_data"
+        case .missingAuthorizationData:
+            return "httperror.missing_authorizationData"
+        case .missingAvailable:
+            return "httperror.missing_available"
+        }
     }
     
-    public var description: String {
+    /// Error reason
+    public var reason: String {
         switch self {
         case .notFound:
             return "Not found"
@@ -57,6 +88,7 @@ public enum HTTPError: FrontendError {
         }
     }
     
+    /// Error http status code
     public var status: HTTPStatus {
         switch self {
         case .notFound:
