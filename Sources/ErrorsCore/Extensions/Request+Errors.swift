@@ -36,7 +36,7 @@ public struct SuccessResponse: Content {
 public struct RequestResponse {
     
     /// Request reference
-    let request: Request
+    public let request: Request
     
     /// Initializer
     public init(req: Request) {
