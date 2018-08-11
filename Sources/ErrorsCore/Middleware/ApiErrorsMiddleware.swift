@@ -31,7 +31,7 @@ public final class ErrorsCoreMiddleware: Middleware, Service {
     public func respond(to req: Request, chainingTo next: Responder) throws -> Future<Response> {
         return try next.respond(to: req).catchMap { (error) -> (Response) in
             if let frontendError = error as? FrontendError {
-                let response = try req.response.error(status: frontendError.status, error: frontendError.identifier, description: frontendError.description)
+                let response = try req.response.error(status: frontendError.status, error: frontendError.identifier, description: frontendError.reason)
                 return response
             }
             else {
