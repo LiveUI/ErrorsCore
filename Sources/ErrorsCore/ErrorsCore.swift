@@ -55,6 +55,9 @@ public enum HTTPError: FrontendError {
     /// Missing search parameters
     case missingSearchParams
     
+    /// Id is missing
+    case missingId
+    
     /// Error code
     public var identifier: String {
         switch self {
@@ -72,6 +75,8 @@ public enum HTTPError: FrontendError {
             return "httperror.missing_available"
         case .missingSearchParams:
             return "httperror.missing_search"
+        case .missingId:
+            return "httperror.missing_id"
         }
     }
     
@@ -92,6 +97,8 @@ public enum HTTPError: FrontendError {
             return "Not available"
         case .missingSearchParams:
             return "Search parameter is missing"
+        case .missingId:
+            return "Id is missing"
         }
     }
     
@@ -106,6 +113,8 @@ public enum HTTPError: FrontendError {
             return .unauthorized
         case .missingRequestData, .missingAuthorizationData, .missingAvailable, .missingSearchParams:
             return .preconditionRequired
+        case .missingId:
+            return .internalServerError
         }
     }
 }
