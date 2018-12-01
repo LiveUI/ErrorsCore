@@ -52,6 +52,9 @@ public enum HTTPError: FrontendError {
     /// Missing available
     case missingAvailable
     
+    /// Missing search parameters
+    case missingSearchParams
+    
     /// Error code
     public var identifier: String {
         switch self {
@@ -67,6 +70,8 @@ public enum HTTPError: FrontendError {
             return "httperror.missing_authorizationData"
         case .missingAvailable:
             return "httperror.missing_available"
+        case .missingSearchParams:
+            return "httperror.missing_search"
         }
     }
     
@@ -85,6 +90,8 @@ public enum HTTPError: FrontendError {
             return "Some authorization data are missing"
         case .missingAvailable:
             return "Not available"
+        case .missingSearchParams:
+            return "Search parameter is missing"
         }
     }
     
@@ -97,11 +104,7 @@ public enum HTTPError: FrontendError {
             fallthrough
         case .notAuthorizedAsAdmin:
             return .unauthorized
-        case .missingRequestData:
-            fallthrough
-        case .missingAuthorizationData:
-            fallthrough
-        case .missingAvailable:
+        case .missingRequestData, .missingAuthorizationData, .missingAvailable, .missingSearchParams:
             return .preconditionRequired
         }
     }
