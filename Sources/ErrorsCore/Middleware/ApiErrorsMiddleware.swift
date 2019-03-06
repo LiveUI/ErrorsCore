@@ -46,10 +46,8 @@ public final class ErrorsCoreMiddleware: Middleware, Service {
                 default:
                     self.log.error(error.localizedDescription)
                     
-                    if let debuggable = error as? Debuggable {
+                    if let debuggable = error {
                         reason = debuggable.reason
-                    } else if let abort = error as? AbortError {
-                        reason = abort.reason
                     } else {
                         reason = "Something went wrong. \(error.localizedDescription)"
                     }
