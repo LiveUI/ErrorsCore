@@ -46,10 +46,10 @@ public final class ErrorsCoreMiddleware: Middleware, Service {
                 default:
                     self.log.error(error.localizedDescription)
                     
-                    if let debuggable = error {
-                        reason = debuggable.reason
+                    if if let abort = error as? AbortError {
+                        reason = abort.reason
                     } else {
-                        reason = "Something went wrong. \(error.localizedDescription)"
+                        reason = debuggable.reason
                     }
                 }
                 return try req.response.internalServerError(message: reason)
