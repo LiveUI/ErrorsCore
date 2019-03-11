@@ -49,7 +49,7 @@ public final class ErrorsCoreMiddleware: Middleware, Service {
                     if if let abort = error as? AbortError {
                         reason = abort.reason
                     } else {
-                        reason = debuggable.reason
+                        reason = error.reason
                     }
                 }
                 return try req.response.internalServerError(message: reason)
