@@ -10,7 +10,9 @@ import Vapor
 
 
 /// Frontend debuggable error
-public protocol FrontendError: Debuggable {
+public protocol FrontendError: Error {
     var status: HTTPStatus { get }
+    var identifier: String { get }
+    var reason: String { get }
 }
 

@@ -1,4 +1,4 @@
-// swift-tools-version:4.0
+// swift-tools-version:5.0
 import PackageDescription
 
 let package = Package(
@@ -7,8 +7,7 @@ let package = Package(
         .library(name: "ErrorsCore", targets: ["ErrorsCore"])
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-nio.git", from: "1.5.0"),
-        .package(url: "https://github.com/vapor/vapor.git", from: "3.0.0")
+        .package(url: "https://github.com/vapor/vapor.git", .branch("master"))
     ],
     targets: [
         .target(name: "ErrorsCore", dependencies: ["Vapor"]),

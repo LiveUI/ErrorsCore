@@ -50,11 +50,11 @@ public struct RequestResponse {
     /// - parameters:
     ///     - status: HTTPStatus, default .ok (200)
     public func basic(status: HTTPStatus = .ok) throws -> Response {
-        let response = Response(using: request)
-        response.http.status = status
+        let response = Response()
+        response.status = status
         
         let headers = HTTPHeaders([("Content-Type", "application/json; charset=utf-8")])
-        response.http.headers = headers
+        response.headers = headers
         
         return response
     }
@@ -70,7 +70,7 @@ public struct RequestResponse {
         
         let responseObject = ErrorResponse(error: error, description: description)
         let encoder = JSONEncoder()
-        response.http.body = try HTTPBody(data: encoder.encode(responseObject))
+        response.body = try Response.Body(data: encoder.encode(responseObject))
         
         return response
     }
@@ -86,7 +86,7 @@ public struct RequestResponse {
         
         let responseObject = SuccessResponse(code: code, description: description)
         let encoder = JSONEncoder()
-        response.http.body = try HTTPBody(data: encoder.encode(responseObject))
+        response.body = try Response.Body(data: encoder.encode(responseObject))
         
         return response
     }
@@ -171,10 +171,10 @@ public struct RequestResponse {
     public func cors() throws -> Response {
         let response = try noContent()
         let origin = "http://www.boost-react.com"
-        response.http.headers.replaceOrAdd(name: "Access-Control-Allow-Origin", value: origin)
+        response.headers.replaceOrAdd(name: "Access-Control-Allow-Origin", value: origin)
         var headers: [String] = []
         var isContentType: Bool = false
-        for header in request.http.headers {
+        for header in request.headers {
             if (header.name.lowercased() == "content-type") {
                 isContentType = true
             }
@@ -186,16 +186,16 @@ public struct RequestResponse {
         if !headers.contains("Authorization") {
             headers.append("Authorization")
         }
-        response.http.headers.replaceOrAdd(name: HTTPHeaderName.accessControlAllowHeaders, value: headers.joined(separator: ","))
-        response.http.headers.replaceOrAdd(name: HTTPHeaderName.accessControlMaxAge, value: "5")
-        response.http.headers.remove(name: HTTPHeaderName.contentType)
+        response.headers.replaceOrAdd(name: .accessControlAllowHeaders, value: headers.joined(separator: ","))
+        response.headers.replaceOrAdd(name: .accessControlMaxAge, value: "5")
+        response.headers.remove(name: .contentType)
         return response
     }
     
 }
 
 
-public extension Request {
+extension Request {
     
     /// Quick access to preset responses (wooohoooo!)
     public var response: RequestResponse {

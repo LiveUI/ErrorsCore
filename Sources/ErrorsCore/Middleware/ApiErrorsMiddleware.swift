@@ -6,14 +6,10 @@
 //
 
 import Foundation
-import Async
-import Debugging
-import HTTP
-import Service
 import Vapor
 
 
-public final class ErrorsCoreMiddleware: Middleware, Service {
+public final class ErrorsCoreMiddleware: Middleware {
     
     /// The environment to respect when presenting errors.
     let environment: Environment
@@ -28,8 +24,8 @@ public final class ErrorsCoreMiddleware: Middleware, Service {
     }
     
     /// See `Middleware.respond`
-    public func respond(to req: Request, chainingTo next: Responder) throws -> Future<Response> {
-        return try next.respond(to: req).catchMap { (error) -> (Response) in
+    public func respond(to req: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
+        return next.respond(to: req).flatMapErrorThrowing { (error) -> (Response) in
             if let frontendError = error as? FrontendError {
                 let response = try req.response.error(status: frontendError.status, error: frontendError.identifier, description: frontendError.reason)
                 return response
@@ -44,9 +40,9 @@ public final class ErrorsCoreMiddleware: Middleware, Service {
                         reason = "Something went wrong."
                     }
                 default:
-                    self.log.error(error.localizedDescription)
+                    self.log.report(error: error)
                     
-                    if let debuggable = error as? Debuggable {
+                    if let debuggable = error as? FrontendError {
                         reason = debuggable.reason
                     } else if let abort = error as? AbortError {
                         reason = abort.reason
